@@ -2,12 +2,18 @@ const express = require("express");
 const router = express();
 const morgan = require("morgan");
 const mongoose = require("mongoose");
+const checkAuth=require('../middleware/check-auth')
 
 const order = require("../models/order");
 const product = require("../models/product");
+const OrdersController =require('../controllers/orders');
+
+router.get("/",checkAuth,OrdersController.orders_get_all)
+
+
 
 //handl incoming get request to /orders
-router.get("/", (req, res, next) => {
+router.get("/",checkAuth, (req, res, next) => {
   order.find()
     .select("product quantity _id")
     .populate('product','name')
@@ -36,7 +42,7 @@ router.get("/", (req, res, next) => {
 });
 
 //handle incomming post request
-router.post("/", (req, res, next) => {
+router.post("/",checkAuth, (req, res, next) => {
     product.findById(req.body.productId)
     .then(product=>{
         if(!product){
@@ -51,19 +57,6 @@ router.post("/", (req, res, next) => {
           });
           return Orders.save();
     })
-    // .catch((err) => {
-    //     res.status(500).json({
-    //       error: err,
-    //     });
-    //   });
-
-
-//   const Orders = new order({
-//     _id: mongoose.Types.ObjectId(),
-//     quantity: req.body.quantity,
-//     product: req.body.productId,
-//   });
-//  return Orders.save()
     .then((result) => {
       console.log(result);
       res.status(201).json({
@@ -87,7 +80,7 @@ router.post("/", (req, res, next) => {
     });
 });
 
-router.get("/:orderID", (req, res, next) => {
+router.get("/:orderID", checkAuth,(req, res, next) => {
   
     order.findById(req.params.orderID)
     // .exec()
@@ -114,7 +107,7 @@ router.get("/:orderID", (req, res, next) => {
       });
 });
 
-router.delete("/:orderID", (req, res, next) => {
+router.delete("/:orderID",checkAuth, (req, res, next) => {
   order.remove({_id:req.params.orderID})
   .exec()
   .then(orders=>{
