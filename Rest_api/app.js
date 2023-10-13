@@ -8,6 +8,7 @@ const app=express();
 
 const productRoutes=require('../Rest_api/routes/products');
 const orderRoutes=require('./routes/orders');
+const userRoutes=require('./routes/user');
 const connectDB = require('./database/connection');
 
 connectDB();
@@ -31,6 +32,7 @@ app.use((req,res,next)=>{
 
 app.use('/products',productRoutes);
 app.use('/orders',orderRoutes);
+app.use('/user',userRoutes);
 app.use((req,res)=>{
     const error=new Error('not found');
     error.status=404;
